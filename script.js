@@ -3,20 +3,15 @@ const sheetURL = "https://script.google.com/macros/s/AKfycbyRvvLmZg1zzfGsgFb8XVU
 fetch(sheetURL)
   .then(res => res.json())
   .then(data => {
-    const header = data[0];
-    const rows = data.slice(1);
+    const taskContainer = document.getElementById("taskContainer");
+    taskContainer.innerHTML = "";
 
-    // Find column index for name and percent
-    let taskIndex = header.indexOf("Task") !== -1 ? header.indexOf("Task") : 0;
-    let percentIndex = header.indexOf("Completed %") !== -1 ? header.indexOf("Completed %") : header.length - 1;
-
-    let taskContainer = document.getElementById("taskContainer");
-    let progressValues = [];
     let labels = [];
+    let progressValues = [];
 
-    rows.forEach(row => {
-      let task = row[taskIndex];
-      let percent = Number(row[percentIndex]) || 0;
+    data.forEach(item => {
+      const task = item["Task"];
+      const percent = Number(item["Completed %"]) || 0;
 
       labels.push(task);
       progressValues.push(percent);
@@ -42,4 +37,5 @@ fetch(sheetURL)
         }]
       }
     });
-  });
+  })
+  .catch(err => console.error("Fetch error:", err));
