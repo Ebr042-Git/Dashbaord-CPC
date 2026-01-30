@@ -1,20 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Project Dashboard</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
+<!-- Filters -->
+<div class="filters">
+  <label for="team-filter">Team:</label>
+  <select id="team-filter">
+    <option value="">All Teams</option>
+  </select>
 
-<h1>Project Dashboard</h1>
+  <label for="status-filter">Status:</label>
+  <select id="status-filter">
+    <option value="">All Status</option>
+    <option value="Active">Active</option>
+    <option value="Completed">Completed</option>
+    <option value="Delayed">Delayed</option>
+  </select>
+</div>
 
-<div id="taskContainer"></div>
+<!-- Table -->
+<table id="dashboard-table">
+  <thead>
+    <tr>
+      <th>Team</th>
+      <th>Status</th>
+      <th>Tasks</th>
+      <th>Progress</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Rows will be inserted here dynamically -->
+  </tbody>
+</table>
 
-<h2>Overall Progress Chart</h2>
-<canvas id="progressChart"></canvas>
-
-<script src="script.js"></script>
-</body>
-</html>
+<!-- Summary cards -->
+<div class="summary-cards">
+  <div class="card">
+    <h3>Total Teams</h3>
+    <p id="totalTeams">0</p>
+  </div>
+  <div class="card">
+    <h3>Active Tasks</h3>
+    <p id="activeTasks">0</p>
+  </div>
+</div>
