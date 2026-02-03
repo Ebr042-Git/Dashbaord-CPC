@@ -1,20 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Project Dashboard</title>
+  <title>Work Dashboard</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-<h1>Project Dashboard CPC</h1>
+<h1>📊 Project Dashboard</h1>
 
-<div id="taskContainer"></div>
+<div id="moduleFilter">
+  <label>Select Module:</label>
+  <select id="moduleDropdown"></select>
+</div>
 
-<h2>Overall Progress Chart</h2>
-<canvas id="progressChart"></canvas>
+<div id="taskTable"></div>
 
-<script src="script.js"></script>
+<h2>Module Progress</h2>
+<canvas id="moduleChart"></canvas>
+
+<script src="dashboard.js"></script>
 </body>
 </html>
