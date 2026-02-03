@@ -1,24 +1,128 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Work Dashboard</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="UTF-8" />
+<title>Project Dashboard</title>
+<style>
+  body { font-family: Arial; padding: 20px; }
+  .progress-bar {
+    width: 300px;
+    height: 25px;
+    background: #eee;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    position: relative;
+  }
+  .progress-fill {
+    height: 100%;
+    background: #4caf50;
+    border-radius: 5px;
+    text-align: center;
+    color: white;
+    line-height: 25px;
+  }
+  table {
+    border-collapse: collapse;
+    margin-top: 20px;
+    width: 70%;
+  }
+  table, th, td {
+    border: 1px solid #444;
+    padding: 6px;
+  }
+</style>
 </head>
 <body>
 
 <h1>📊 Project Dashboard</h1>
 
-<div id="moduleFilter">
-  <label>Select Module:</label>
-  <select id="moduleDropdown"></select>
-</div>
-
-<div id="taskTable"></div>
+<label>Select Module:</label>
+<select id="moduleSelect"></select>
 
 <h2>Module Progress</h2>
-<canvas id="moduleChart"></canvas>
+<div id="progressContainer"></div>
 
-<script src="dashboard.js"></script>
+<h2>Task Table</h2>
+<div id="tableContainer"></div>
+
+<script>
+// 🔗 YOUR GOOGLE APPS SCRIPT URL
+const API_URL = "YOUR_GOOGLE_SCRIPT_URL_HERE";
+
+// 1️⃣ LOAD DATA FROM GOOGLE SHEET API
+async function loadData() {
+    const response = await fetch(API_URL);
+    const data = await response.json();
+    return data;
+}
+
+// 2️⃣ POPULATE MODULE DROPDOWN
+function populateModules(data) {
+    const select = document.getElementById("moduleSelect");
+    const modules = [...new Set(data.map(row => row.Module))];
+
+    select.innerHTML = modules
+        .map(m => `<option value="${m}">${m}</option>`)
+        .join("");
+
+    select.onchange = () => renderDashboard(data);
+}
+
+// 3️⃣ RENDER THE DASHBOARD BASED ON SELECTED MODULE
+function renderDashboard(data) {
+    const module = document.getElementById("moduleSelect").value;
+    const moduleData = data.filter(r => r.Module === module);
+
+    // Progress = (Completed / Total) * 100
+    let completed = moduleData.filter(r => r.Status === "Done").length;
+    let total = moduleData.length;
+    let percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+    // Progress bar
+    document.getElementById("progressContainer").innerHTML = `
+        <div class="progress-bar">
+            <div class="progress-fill" style="width:${percent}%">
+                ${percent}%
+            </div>
+        </div>
+    `;
+
+    // Table
+    let tableHTML = `
+        <table>
+            <tr>
+                <th>Task</th>
+                <th>Status</th>
+                <th>Assignee</th>
+                <th>Date</th>
+            </tr>
+    `;
+
+    moduleData.forEach(row => {
+        tableHTML += `
+            <tr>
+                <td>${row.Task}</td>
+                <td>${row.Status}</td>
+                <td>${row.AssignedTo}</td>
+                <td>${row.Date}</td>
+            </tr>
+        `;
+    });
+
+    tableHTML += "</table>";
+
+    document.getElementById("tableContainer").innerHTML = tableHTML;
+}
+
+// 4️⃣ INITIALIZE DASHBOARD
+async function init() {
+    const data = await loadData();
+    populateModules(data);
+    renderDashboard(data);
+}
+
+init();
+</script>
+
 </body>
 </html>
