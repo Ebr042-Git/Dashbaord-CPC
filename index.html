@@ -46,14 +46,20 @@
 <div id="tableContainer"></div>
 
 <script>
-// 🔗 YOUR GOOGLE APPS SCRIPT URL
-const API_URL = "https://script.google.com/macros/s/AKfycbw_jddDk_L0C76F4KWi6KP3W2Dh1chxvYnFAfod5b4cD97BzMkYTNmUdOkegTWazT3U/exec";
+// 🔗 Your deployed Google Apps Script Web App URL
+const API_URL = "https://script.google.com/macros/s/AKfycby1BiRAYAX0kkKWkZ38iHWxb-nEH6wVnldHCUSI8H7c2qtQ9aBOYUsRO9ddeQbv6ZAm/exec";
 
 // 1️⃣ LOAD DATA FROM GOOGLE SHEET API
 async function loadData() {
-    const response = await fetch(API_URL);
-    const data = await response.json();
-    return data;
+    try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        console.log("Loaded data:", data); // debug
+        return data;
+    } catch (err) {
+        console.error("Error loading data:", err);
+        return [];
+    }
 }
 
 // 2️⃣ POPULATE MODULE DROPDOWN
@@ -68,15 +74,15 @@ function populateModules(data) {
     select.onchange = () => renderDashboard(data);
 }
 
-// 3️⃣ RENDER THE DASHBOARD BASED ON SELECTED MODULE
+// 3️⃣ RENDER DASHBOARD
 function renderDashboard(data) {
     const module = document.getElementById("moduleSelect").value;
     const moduleData = data.filter(r => r.Module === module);
 
     // Progress = (Completed / Total) * 100
-    let completed = moduleData.filter(r => r.Status === "Done").length;
-    let total = moduleData.length;
-    let percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+    const completed = moduleData.filter(r => r.Status.toLowerCase() === "done").length;
+    const total = moduleData.length;
+    const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
 
     // Progress bar
     document.getElementById("progressContainer").innerHTML = `
@@ -110,15 +116,18 @@ function renderDashboard(data) {
     });
 
     tableHTML += "</table>";
-
     document.getElementById("tableContainer").innerHTML = tableHTML;
 }
 
 // 4️⃣ INITIALIZE DASHBOARD
 async function init() {
     const data = await loadData();
-    populateModules(data);
-    renderDashboard(data);
+    if (data.length > 0) {
+        populateModules(data);
+        renderDashboard(data);
+    } else {
+        document.getElementById("progressContainer").innerText = "No data found.";
+    }
 }
 
 init();
